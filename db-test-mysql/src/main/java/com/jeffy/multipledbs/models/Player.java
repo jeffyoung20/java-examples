@@ -1,4 +1,4 @@
-package com.jeffy.dbtestmysql.models;
+package com.jeffy.multipledbs.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

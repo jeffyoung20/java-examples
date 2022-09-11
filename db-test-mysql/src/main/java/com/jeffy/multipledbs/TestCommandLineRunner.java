@@ -1,4 +1,4 @@
-package com.jeffy.dbtestmysql;
+package com.jeffy.multipledbs;
 
 import java.util.List;
 
@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.jeffy.dbtestmysql.models.Player;
-import com.jeffy.dbtestmysql.services.PlayerRepository;
+import com.jeffy.multipledbs.models.Player;
+import com.jeffy.multipledbs.services.PlayerRepository;
 
 @Component
 public class TestCommandLineRunner implements CommandLineRunner {

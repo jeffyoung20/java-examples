@@ -1,4 +1,4 @@
-package com.jeffy.dbtestmysql.services;
+package com.jeffy.multipledbs.services;
 
 import javax.sql.DataSource;
 
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-  basePackages = {"com.jeffy.dbtestmysql.services"},
+  basePackages = {"com.jeffy.multipledbs.services"},
   entityManagerFactoryRef = "baseballEntityManagerFactory",
   transactionManagerRef = "baseballTransactionManager"
 )
@@ -26,7 +26,7 @@ public class JpaMysql {
       EntityManagerFactoryBuilder builder) {
         return builder
           .dataSource(dataSource)
-          .packages("com.jeffy.dbtestmysql.models")
+          .packages("com.jeffy.multipledbs.models")
           .build();
     }
 
