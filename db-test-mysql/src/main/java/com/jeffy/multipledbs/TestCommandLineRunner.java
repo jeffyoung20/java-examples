@@ -30,7 +30,7 @@ public class TestCommandLineRunner implements CommandLineRunner {
 		
 		List<Employee> listEmployees = employeeRepo.findAll();
 		
-		logger.info("Do i get here?");
+		logger.info("The end");
 	}
 
 }
