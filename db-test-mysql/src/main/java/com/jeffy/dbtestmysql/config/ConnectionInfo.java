@@ -1,18 +1,12 @@
 package com.jeffy.dbtestmysql.config;
 
 
+//@Data
+public class ConnectionInfo {
+	public String url;
+	public String username;
+	public String password;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-
-
-@Configuration
-@ConfigurationProperties("spring.datasource")
-public class AppConfig {
-	private String url;
-	private String username;
-	private String password;
-	
 	public String getUrl() {
 		return url;
 	}
