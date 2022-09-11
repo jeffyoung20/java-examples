@@ -1,4 +1,4 @@
-package com.jeffy.multipledbs.models;
+package com.jeffy.multipledbs.baseball.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

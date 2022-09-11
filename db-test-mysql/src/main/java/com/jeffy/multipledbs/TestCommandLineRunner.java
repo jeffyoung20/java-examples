@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.jeffy.multipledbs.models.Player;
-import com.jeffy.multipledbs.services.PlayerRepository;
+import com.jeffy.multipledbs.baseball.models.Player;
+import com.jeffy.multipledbs.baseball.services.PlayerRepository;
+import com.jeffy.multipledbs.classicmodels.models.Employee;
+import com.jeffy.multipledbs.classicmodels.services.EmployeeRepository;
+
 
 @Component
 public class TestCommandLineRunner implements CommandLineRunner {
@@ -17,13 +20,17 @@ public class TestCommandLineRunner implements CommandLineRunner {
 
 	@Autowired
 	private PlayerRepository playerRepo;
+	
+	@Autowired 
+	private EmployeeRepository employeeRepo;
 
 	@Override
 	public void run(String... args) throws Exception {
 		List<Player> listPlayers = playerRepo.findAll();
 		
-		logger.info("Do i get here?");
+		List<Employee> listEmployees = employeeRepo.findAll();
 		
+		logger.info("Do i get here?");
 	}
 
 }

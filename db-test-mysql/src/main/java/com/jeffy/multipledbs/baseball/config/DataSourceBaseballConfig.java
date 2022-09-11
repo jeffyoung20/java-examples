@@ -1,4 +1,4 @@
-package com.jeffy.multipledbs.config;
+package com.jeffy.multipledbs.baseball.config;
 
 import javax.sql.DataSource;
 
@@ -6,21 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import com.jeffy.multipledbs.config.ConnectionInfo;
+
 @Configuration
-public class DataSourceClassicModelsConfig {
+public class DataSourceBaseballConfig {
 	@Autowired
-	@Qualifier("connInfoClassicModels")
+	@Qualifier("connInfoBaseBall")
 	ConnectionInfo connnectionInfo;
 	
-	@Primary
-	@Bean(name="dataSourceClassicModels")
-	public DataSource dataSourceClassicModels() {
+	@Bean(name="dataSourceBaseball")
+	//@Qualifier("dataSourceBaseball")
+	public DataSource dataSourceBaseball() {
 	    DriverManagerDataSource dataSource = new DriverManagerDataSource();
-
-	    //dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 	    dataSource.setUsername(connnectionInfo.getUsername());
 	    dataSource.setPassword(connnectionInfo.getPassword());
 	    dataSource.setUrl(connnectionInfo.getUrl()); 

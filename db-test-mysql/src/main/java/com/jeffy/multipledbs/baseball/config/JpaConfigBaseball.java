@@ -1,4 +1,4 @@
-package com.jeffy.multipledbs.services;
+package com.jeffy.multipledbs.baseball.config;
 
 import javax.sql.DataSource;
 
@@ -15,18 +15,18 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-  basePackages = {"com.jeffy.multipledbs.services"},
+  basePackages = {"com.jeffy.multipledbs.baseball.services"},
   entityManagerFactoryRef = "baseballEntityManagerFactory",
   transactionManagerRef = "baseballTransactionManager"
 )
-public class JpaMysql {
+public class JpaConfigBaseball {
     @Bean
     public LocalContainerEntityManagerFactoryBean baseballEntityManagerFactory(
       @Qualifier("dataSourceBaseball") DataSource dataSource ,
       EntityManagerFactoryBuilder builder) {
         return builder
           .dataSource(dataSource)
-          .packages("com.jeffy.multipledbs.models")
+          .packages("com.jeffy.multipledbs.baseball.models")
           .build();
     }
 
