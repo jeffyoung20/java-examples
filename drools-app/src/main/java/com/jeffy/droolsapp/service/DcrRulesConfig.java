@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan("com.jeffy.droolsapp.service")
 public class DcrRulesConfig {
-	private static final String drlFile = "ROUTING_RULE.drl";
+	private static final String drlFile = "ROUTING_RULES.drl";
 
     @Bean
     public KieContainer kieContainer() {
