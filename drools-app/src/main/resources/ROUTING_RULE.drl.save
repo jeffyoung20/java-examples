@@ -1,0 +1,12 @@
+import com.jeffy.droolsapp.models.Entity;
+import com.jeffy.droolsapp.models.Dcr;
+
+global com.jeffy.droolsapp.models.Entity entity;
+dialect  "mvel"
+
+rule "Route Dcr - Scenario 1"
+    when
+        DcrInstance:Dcr(uri == "5");
+    then
+      	entity.uri = "6";
+end
