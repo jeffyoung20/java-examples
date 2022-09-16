@@ -14,7 +14,6 @@ import com.jeffy.droolsapp.service.DcrRulesConfig;
 import com.jeffy.droolsapp.service.DcrService;
 
 @SpringBootTest
-@ContextConfiguration(classes = DcrRulesConfig.class)
 class DroolsRoutingTests {
 	private static Logger logger = LoggerFactory.getLogger(DroolsAppRunner.class);
 	
@@ -22,13 +21,11 @@ class DroolsRoutingTests {
 	private DcrService service;
 	
 	@Test
-	public void testRule1() throws Exception {
+	public void testRule_USToInternal() throws Exception {
 		RoutingInfo ri = new RoutingInfo();
 		ri.routeTo = "Unknown";
 	    Dcr dcr = new Dcr();
-//	    dcr.uri = "changeRequest/1";
 	    Entity entity = new Entity();
-//	    entity.uri = "entities/1";
 	    entity.country = "US";
 	    dcr.entity = entity;
 	    String destination = service.routeDcr(dcr, ri);
@@ -36,4 +33,16 @@ class DroolsRoutingTests {
 	    Assertions.assertEquals("internal",ri.routeTo);
 	}
 
+	@Test
+	public void testRule_NonUSToExternal() throws Exception {
+		RoutingInfo ri = new RoutingInfo();
+		ri.routeTo = "Unknown";
+	    Dcr dcr = new Dcr();
+	    Entity entity = new Entity();
+	    entity.country = "ES";
+	    dcr.entity = entity;
+	    String destination = service.routeDcr(dcr, ri);
+	    logger.info("RouteTo: {}",ri.routeTo);
+	    Assertions.assertEquals("external",ri.routeTo);
+	}
 }

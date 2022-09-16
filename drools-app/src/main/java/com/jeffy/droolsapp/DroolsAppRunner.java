@@ -12,7 +12,7 @@ import com.jeffy.droolsapp.models.RoutingInfo;
 import com.jeffy.droolsapp.service.DcrService;
 
 
-@Component
+//@Component
 public class DroolsAppRunner implements CommandLineRunner {
 	private static Logger logger = LoggerFactory.getLogger(DroolsAppRunner.class);
 	

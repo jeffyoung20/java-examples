@@ -16,11 +16,10 @@ public class DcrService {
 
     public String routeDcr(Dcr dcr, RoutingInfo routingInfo) {
         KieSession kieSession = kieContainer.newKieSession();
-        //kieSession.setGlobal("dcr", dcr);
         kieSession.insert(dcr);
         kieSession.insert(routingInfo);
         kieSession.fireAllRules();
         kieSession.dispose();
-        return dcr.destination; 
+        return routingInfo.routeTo; 
     }
 }
