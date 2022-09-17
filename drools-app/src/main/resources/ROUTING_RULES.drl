@@ -7,10 +7,13 @@ dialect  "mvel"
 rule "Route Dcr - Country US to internal"
     when
     	r: RoutingInfo()
-    	Dcr(entity.country=="US")
+    	dcr: Dcr(entity.country=="US")
     then
       	modify(r) {
       		routeTo = "internal"
+      	}
+      	modify(dcr) {
+      		destination = "internal"
       	}
 end
 
@@ -18,9 +21,12 @@ end
 rule "Route Dcr - Country NOT US to external"
     when
     	r: RoutingInfo()
-    	Dcr(entity.country !="US")
+    	dcr: Dcr(entity.country !="US")
     then
       	modify(r) {
       		routeTo = "external"
+      	}
+      	modify(dcr) {
+      		destination = "external"
       	}
 end

@@ -22,27 +22,35 @@ class DroolsRoutingTests {
 	
 	@Test
 	public void testRule_USToInternal() throws Exception {
-		RoutingInfo ri = new RoutingInfo();
-		ri.routeTo = "Unknown";
-	    Dcr dcr = new Dcr();
+		//Arrange
 	    Entity entity = new Entity();
 	    entity.country = "US";
+	    Dcr dcr = new Dcr();
 	    dcr.entity = entity;
-	    String destination = service.routeDcr(dcr, ri);
+
+	    //Act
+	    RoutingInfo ri = service.routeDcr(dcr);
 	    logger.info("RouteTo: {}",ri.routeTo);
+	    
+	    //Assert
 	    Assertions.assertEquals("internal",ri.routeTo);
+	    Assertions.assertEquals("internal",dcr.destination);
 	}
 
 	@Test
 	public void testRule_NonUSToExternal() throws Exception {
-		RoutingInfo ri = new RoutingInfo();
-		ri.routeTo = "Unknown";
-	    Dcr dcr = new Dcr();
+		//Arrange
 	    Entity entity = new Entity();
 	    entity.country = "ES";
+	    Dcr dcr = new Dcr();
 	    dcr.entity = entity;
-	    String destination = service.routeDcr(dcr, ri);
+
+	    //Act
+	    RoutingInfo ri = service.routeDcr(dcr);
 	    logger.info("RouteTo: {}",ri.routeTo);
+	    
+	    //Assert
 	    Assertions.assertEquals("external",ri.routeTo);
+	    Assertions.assertEquals("external",dcr.destination);
 	}
 }

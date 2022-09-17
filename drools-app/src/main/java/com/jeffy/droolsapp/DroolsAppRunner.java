@@ -21,14 +21,12 @@ public class DroolsAppRunner implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-		RoutingInfo ri = new RoutingInfo();
-		ri.routeTo = "Unknown";
 	    Dcr dcr = getDcr("US");
-	    service.routeDcr(dcr, ri);
+	    RoutingInfo ri = service.routeDcr(dcr);
 	    logger.info("RouteTo: {}",ri.routeTo);
 
 		dcr = getDcr("CN");
-	    service.routeDcr(dcr, ri);
+		ri =service.routeDcr(dcr);
 	    logger.info("RouteTo: {}",ri.routeTo);
 }
 

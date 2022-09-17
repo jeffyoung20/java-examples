@@ -14,12 +14,13 @@ public class DcrService {
 	@Autowired
     private KieContainer kieContainer;
 
-    public String routeDcr(Dcr dcr, RoutingInfo routingInfo) {
+    public RoutingInfo routeDcr(Dcr dcr) {
+    	RoutingInfo routingInfo = new RoutingInfo();
         KieSession kieSession = kieContainer.newKieSession();
         kieSession.insert(dcr);
         kieSession.insert(routingInfo);
         kieSession.fireAllRules();
         kieSession.dispose();
-        return routingInfo.routeTo; 
+        return routingInfo; 
     }
 }
