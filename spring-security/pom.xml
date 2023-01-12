@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.4</version>
+		<version>3.0.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.jeffy</groupId>
-	<artifactId>secure-webapp</artifactId>
+	<groupId>com.gls</groupId>
+	<artifactId>spring-security</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>secure-webapp</name>
-	<description>Demo project for Spring Boot</description>
+	<name>spring-security</name>
+	<description>Spring Security Project</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -23,15 +23,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
 		</dependency>
 
 		<dependency>
