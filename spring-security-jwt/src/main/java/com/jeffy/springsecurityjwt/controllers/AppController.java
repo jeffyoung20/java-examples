@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,11 +58,15 @@ public class AppController {
 	
 	@GetMapping(path="/user")
 	public String userPage() {
-		return "<h1>Hello User</h1>";
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
+		return String.format("<h1>Hello User: %s</h1>", currentPrincipalName);
 	}
 
 	@GetMapping(path="/admin")
 	public String adminPage() {
-		return "<h1>Hello Admin</h1>";
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
+		return String.format("<h1>Hello Admin: %s</h1>", currentPrincipalName);
 	}
 }
