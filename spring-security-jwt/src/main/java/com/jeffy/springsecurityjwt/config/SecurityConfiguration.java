@@ -1,4 +1,4 @@
-package com.jeffy.springsecurityjwt;
+package com.jeffy.springsecurityjwt.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -39,9 +39,9 @@ public class SecurityConfiguration {
 		return (
 			http.authorizeHttpRequests((authorize) -> {
 				authorize.requestMatchers("/authenticate").permitAll()
-					.requestMatchers("/hello-world").hasRole("USER")
-					// .requestMatchers("/user").hasAnyRole("USER","ADMIN")
-					// .requestMatchers("/**").hasRole("ADMIN")
+					.requestMatchers("/").permitAll()
+					.requestMatchers("/user").hasAnyRole("USER", "ADMIN")
+					.requestMatchers("/**").hasRole("ADMIN")
 					.anyRequest().denyAll();
 				})
 			.csrf().disable()

@@ -1,4 +1,4 @@
-package com.jeffy.springsecurityjwt;
+package com.jeffy.springsecurityjwt.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jeffy.springsecurityjwt.models.AuthenticationRequest;
 import com.jeffy.springsecurityjwt.models.AuthenticationResponse;
+import com.jeffy.springsecurityjwt.utils.JwtUtil;
 
 @RestController
 public class AppController {
@@ -48,12 +49,11 @@ public class AppController {
 		return ResponseEntity.ok(new AuthenticationResponse(jwt));
 	}
 	
-	@GetMapping(path="/hello-world")
+	@GetMapping(path="/")
 	public String helloWorld() {
 		return "<h1>Hello World</h1>";
 	}
 	
-	/*
 	@GetMapping(path="/user")
 	public String userPage() {
 		return "<h1>Hello User</h1>";
@@ -63,5 +63,4 @@ public class AppController {
 	public String adminPage() {
 		return "<h1>Hello Admin</h1>";
 	}
-	*/
 }

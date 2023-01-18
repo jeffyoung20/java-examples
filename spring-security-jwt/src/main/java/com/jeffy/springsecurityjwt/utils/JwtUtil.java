@@ -1,4 +1,4 @@
-package com.jeffy.springsecurityjwt;
+package com.jeffy.springsecurityjwt.utils;
 
 import java.util.Date;
 import java.util.HashMap;
