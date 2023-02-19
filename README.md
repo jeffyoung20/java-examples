@@ -1,2 +1,2 @@
 # java-examples
-Sample Java Code
+This repository contains a collection of sample Java Projects
