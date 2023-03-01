@@ -3,7 +3,9 @@ package com.jeffyoung20.dataserver.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +16,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jeffyoung20.dataserver.models.Address;
-import com.jeffyoung20.dataserver.models.Person;
+import com.jeffyoung20.dataserver.models.data.Address;
+import com.jeffyoung20.dataserver.models.data.Person;
+import com.jeffyoung20.dataserver.models.dto.AddressDto;
+import com.jeffyoung20.dataserver.models.dto.PersonDto;
 import com.jeffyoung20.dataserver.repos.AddressRepo;
 import com.jeffyoung20.dataserver.repos.PersonRepo;
 
@@ -28,33 +32,58 @@ public class PersonController {
 	@Autowired
 	AddressRepo addressRepo;
 	
+    @Autowired
+    private ModelMapper modelMapper;
+    
+	
 	@GetMapping("/person")
-	public ResponseEntity<List<Person>> getAllPerson() {
+	public ResponseEntity<List<PersonDto>> getAllPerson() {
 		List<Person> listPersons = personRepo.findAll();
-		return  new ResponseEntity<>(listPersons,HttpStatus.OK);
+		List<PersonDto> listPersonDtos = listPersons.stream()
+			.map(this::convertToDto)
+        	.collect(Collectors.toList());
+		return  new ResponseEntity<>(listPersonDtos,HttpStatus.OK);
 	}
 	
 	@GetMapping("/person/{id}")
-	public ResponseEntity<Person> getPersonById(@PathVariable("id") long id) {
-		Person p = personRepo.findById(id)
+	public ResponseEntity<PersonDto> getPersonById(@PathVariable("id") long id) {
+		Person person = personRepo.findById(id)
 				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
-		return  new ResponseEntity<>(p, HttpStatus.OK);
+		PersonDto personDto = convertToDto(person);
+		return  new ResponseEntity<>(personDto, HttpStatus.OK);
 	}
 
 	@PostMapping("/person")
-	public ResponseEntity<List<Person>> addPersons(@RequestBody List<Person> listPerson) {
-		for(Person person: listPerson) {
-			for(Address addr : person.addresses) {
-				addr.person = person;
+	public ResponseEntity<List<PersonDto>> addPersons(@RequestBody List<PersonDto> listPersonDto) {
+		List<Person> listPerson = new ArrayList<Person>();
+		for(PersonDto personDto: listPersonDto) {
+			Person person = convertToEntity(personDto);
+			listPerson.add(person);
+			for(Address addr: person.getAddresses()) {
+				addr.setPerson(person);
 			}
 		}
 		List<Person> listAdded = personRepo.saveAll(listPerson);
-		return new ResponseEntity<>(listAdded, HttpStatus.CREATED);
+		List<PersonDto> listPersonDtos = listAdded.stream()
+											.map(this::convertToDto)
+											.collect(Collectors.toList());
+		return new ResponseEntity<>(listPersonDtos, HttpStatus.CREATED);
 	}
 	
 	@DeleteMapping("/person/{id}")
 	public ResponseEntity<HttpStatus> deletePerson(@PathVariable("id") long id) {
 		personRepo.deleteById(id);
 	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+	
+	
+	private PersonDto convertToDto(Person person) {
+		PersonDto postDto = modelMapper.map(person, PersonDto.class);
+	    return postDto;
+	}
+	
+	private Person convertToEntity(PersonDto personDto) {
+	    Person person = modelMapper.map(personDto, Person.class);
+	    return person;
 	}
 }
