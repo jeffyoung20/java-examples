@@ -22,12 +22,14 @@ public class Person {
 	private String firstName;
 	private String lastName;
 	
+	/*
 	public Person(String firstName, String lastName) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
-
+	*/
+	
 	/*
 	 * NOTE:  mappedBy property tells Hibernate which variable we are using to 
 	 * represent the parent class in our child class.
@@ -40,12 +42,14 @@ public class Person {
 	List<Team> teams;
 
 	
-	public List<Team> getOrganizations() {
+
+
+	public List<Team> getTeams() {
 		return teams;
 	}
 
-	public void setOrganizations(List<Team> organizations) {
-		this.teams = organizations;
+	public void setTeams(List<Team> teams) {
+		this.teams = teams;
 	}
 
 	public long getId() {

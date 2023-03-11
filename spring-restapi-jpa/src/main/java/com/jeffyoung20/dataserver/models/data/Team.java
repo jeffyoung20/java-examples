@@ -20,7 +20,7 @@ public class Team {
 	private long id;
 	private String name;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "team_person", joinColumns = @JoinColumn(name = "team_id"), inverseJoinColumns = @JoinColumn(name = "person_id"))
 	private List<Person> teamPersons;
 

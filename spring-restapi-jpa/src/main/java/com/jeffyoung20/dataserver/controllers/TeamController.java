@@ -20,6 +20,7 @@ import com.jeffyoung20.dataserver.models.data.Person;
 import com.jeffyoung20.dataserver.models.data.Team;
 import com.jeffyoung20.dataserver.models.dto.PersonDto;
 import com.jeffyoung20.dataserver.models.dto.TeamDto;
+import com.jeffyoung20.dataserver.repos.PersonRepo;
 import com.jeffyoung20.dataserver.repos.TeamRepo;
 
 @RestController
@@ -30,7 +31,10 @@ public class TeamController {
     @Autowired
     private TeamRepo teamRepo;
     
-	@GetMapping("/team")
+    @Autowired
+    private PersonRepo personRepo;
+
+    @GetMapping("/team")
 	public ResponseEntity<List<TeamDto>> getAllTeams() {
 		List<Team> listTeams = teamRepo.findAll();
 		List<TeamDto> listTeamDtos = listTeams.stream()
@@ -49,16 +53,14 @@ public class TeamController {
 	
 
 	@PostMapping("/team")
-	public ResponseEntity<List<TeamDto>> addTeamss(@RequestBody List<TeamDto> listTeamDto) {
+	public ResponseEntity<List<TeamDto>> addTeams(@RequestBody List<TeamDto> listTeamDto) {
 		List<Team> listTeam = new ArrayList<Team>();
 		for(TeamDto teamDto: listTeamDto) {
 			Team team =  modelMapper.map(teamDto, Team.class);
-			
 //			List<Person> listPersons = new ArrayList<Person>();
 //			Person p = new Person("Jeff", "Young");
 //			listPersons.add(p);
 //			team.setTeamPersons(listPersons);
-			
 			listTeam.add(team);
 		}
 		List<Team> listAdded = teamRepo.saveAll(listTeam);
@@ -66,6 +68,38 @@ public class TeamController {
 											.map(team -> modelMapper.map(team, TeamDto.class))
 											.collect(Collectors.toList());
 		return new ResponseEntity<>(listTeamDtos, HttpStatus.CREATED);
+	}
+	
+	
+	@PostMapping("/team/{id}/person")
+	public ResponseEntity<TeamDto> addTeamPerson(@PathVariable("id") long teamId, @RequestBody List<PersonDto> listPersonDto) {
+		Team team = teamRepo.findById(teamId)
+				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+		List<Person> listPerson = new ArrayList<Person>();
+		for(PersonDto personDto: listPersonDto) {
+			Person person = modelMapper.map(personDto, Person.class);
+			
+			List<Person> teamPersons = team.getTeamPersons();
+			if(teamPersons == null) {
+				List<Person> listPersons = new ArrayList<Person>();
+				team.setTeamPersons(listPersons);
+			}
+			teamPersons.add(person);
+			
+			listPerson.add(person);
+			for(Address addr: person.getAddresses()) {
+				addr.setPerson(person);
+			}
+			personRepo.save(person);
+			teamRepo.save(team);
+		}
+		
+		//Return Team DTO
+		team = teamRepo.findById(teamId)
+				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+		TeamDto teamDto = modelMapper.map(team, TeamDto.class);
+		return new ResponseEntity<>(teamDto, HttpStatus.CREATED);
+
 	}
 
 	@DeleteMapping("/team/{id}")

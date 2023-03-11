@@ -40,7 +40,7 @@ public class PersonController {
 	public ResponseEntity<List<PersonDto>> getAllPerson() {
 		List<Person> listPersons = personRepo.findAll();
 		List<PersonDto> listPersonDtos = listPersons.stream()
-			.map(this::convertToDto)
+			.map(person -> modelMapper.map(person, PersonDto.class))
         	.collect(Collectors.toList());
 		return  new ResponseEntity<>(listPersonDtos,HttpStatus.OK);
 	}
@@ -49,7 +49,7 @@ public class PersonController {
 	public ResponseEntity<PersonDto> getPersonById(@PathVariable("id") long id) {
 		Person person = personRepo.findById(id)
 				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
-		PersonDto personDto = convertToDto(person);
+		PersonDto personDto = modelMapper.map(person, PersonDto.class);
 		return  new ResponseEntity<>(personDto, HttpStatus.OK);
 	}
 
@@ -57,7 +57,7 @@ public class PersonController {
 	public ResponseEntity<List<PersonDto>> addPersons(@RequestBody List<PersonDto> listPersonDto) {
 		List<Person> listPerson = new ArrayList<Person>();
 		for(PersonDto personDto: listPersonDto) {
-			Person person = convertToEntity(personDto);
+			Person person = modelMapper.map(personDto, Person.class);
 			listPerson.add(person);
 			for(Address addr: person.getAddresses()) {
 				addr.setPerson(person);
@@ -65,7 +65,7 @@ public class PersonController {
 		}
 		List<Person> listAdded = personRepo.saveAll(listPerson);
 		List<PersonDto> listPersonDtos = listAdded.stream()
-											.map(this::convertToDto)
+											.map(person -> modelMapper.map(person, PersonDto.class))
 											.collect(Collectors.toList());
 		return new ResponseEntity<>(listPersonDtos, HttpStatus.CREATED);
 	}
@@ -76,14 +76,4 @@ public class PersonController {
 	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
-	
-	private PersonDto convertToDto(Person person) {
-		PersonDto postDto = modelMapper.map(person, PersonDto.class);
-	    return postDto;
-	}
-	
-	private Person convertToEntity(PersonDto personDto) {
-	    Person person = modelMapper.map(personDto, Person.class);
-	    return person;
-	}
 }
