@@ -2,6 +2,7 @@ package com.jeffyoung20.dataserver.models.data;
 
 import java.util.List;
 
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,7 +21,9 @@ public class Team {
 	private long id;
 	private String name;
 
+	//@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@ManyToMany(fetch = FetchType.LAZY)
+	//@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
 	@JoinTable(name = "team_person", joinColumns = @JoinColumn(name = "team_id"), inverseJoinColumns = @JoinColumn(name = "person_id"))
 	private List<Person> teamPersons;
 

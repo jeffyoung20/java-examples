@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jeffyoung20.dataserver.models.data.Address;
 import com.jeffyoung20.dataserver.models.data.Person;
 import com.jeffyoung20.dataserver.models.data.Team;
+import com.jeffyoung20.dataserver.models.dto.AddressDto;
 import com.jeffyoung20.dataserver.models.dto.PersonDto;
 import com.jeffyoung20.dataserver.models.dto.TeamDto;
+import com.jeffyoung20.dataserver.repos.AddressRepo;
 import com.jeffyoung20.dataserver.repos.PersonRepo;
 import com.jeffyoung20.dataserver.repos.TeamRepo;
 
@@ -33,6 +35,9 @@ public class TeamController {
     
     @Autowired
     private PersonRepo personRepo;
+    
+    @Autowired
+    private AddressRepo addressRepo;
 
     @GetMapping("/team")
 	public ResponseEntity<List<TeamDto>> getAllTeams() {
@@ -51,23 +56,51 @@ public class TeamController {
 		return  new ResponseEntity<>(teamDto, HttpStatus.OK);
 	}
 	
-
 	@PostMapping("/team")
 	public ResponseEntity<List<TeamDto>> addTeams(@RequestBody List<TeamDto> listTeamDto) {
-		List<Team> listTeam = new ArrayList<Team>();
+		List<Team> listTeamUpdated = new ArrayList<Team>();
 		for(TeamDto teamDto: listTeamDto) {
 			Team team =  modelMapper.map(teamDto, Team.class);
-//			List<Person> listPersons = new ArrayList<Person>();
-//			Person p = new Person("Jeff", "Young");
-//			listPersons.add(p);
-//			team.setTeamPersons(listPersons);
-			listTeam.add(team);
+			List<Person> listPerson = new ArrayList<Person>();
+			for(PersonDto personDto: teamDto.getTeamPersons()) {
+				Person person = new Person();
+				person.setFirstName(personDto.getFirstName());
+				person.setLastName(personDto.getLastName());
+				List<Address> listAddress = new ArrayList<Address>();
+				for(AddressDto addrDto: personDto.getAddresses()) {
+					Address addr = new Address();
+					addr.setLine1(addrDto.getLine1());
+					addr.setLine2(addrDto.getLine2());
+					addr.setCity(addrDto.getCity());
+					addr.setState(addrDto.getState());
+					addr.setZip(addrDto.getZip());
+					addressRepo.save(addr);
+					addr.setPerson(person);
+					listAddress.add(addr);
+				}
+				person.setAddresses(listAddress);
+				personRepo.save(person);
+				List<Team> listTeams = new ArrayList<Team>();
+				listTeams.add(team);
+				person.setTeams(listTeams);
+				listPerson.add(person);
+			}
+			team.setTeamPersons(listPerson);
+			teamRepo.save(team);
+			listTeamUpdated.add(team);
 		}
-		List<Team> listAdded = teamRepo.saveAll(listTeam);
-		List<TeamDto> listTeamDtos = listAdded.stream()
-											.map(team -> modelMapper.map(team, TeamDto.class))
-											.collect(Collectors.toList());
-		return new ResponseEntity<>(listTeamDtos, HttpStatus.CREATED);
+		
+		//Return updated team by querying datbase to verify results
+		List<Team> returnTeams = new ArrayList<Team>();
+		for(Team teamUpdated : listTeamUpdated) {
+			Team returnTeam = teamRepo.findById(teamUpdated.getId())
+					.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+			returnTeams.add(returnTeam);	
+		}
+		List<TeamDto> returnTeamsDto = returnTeams.stream()
+			.map(team -> modelMapper.map(team, TeamDto.class))
+        	.collect(Collectors.toList());
+		return new ResponseEntity<>(returnTeamsDto, HttpStatus.CREATED);
 	}
 	
 	
