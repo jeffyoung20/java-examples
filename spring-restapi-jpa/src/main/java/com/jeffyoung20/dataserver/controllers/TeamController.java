@@ -36,8 +36,6 @@ public class TeamController {
     @Autowired
     private PersonRepo personRepo;
     
-    @Autowired
-    private AddressRepo addressRepo;
 
     @GetMapping("/team")
 	public ResponseEntity<List<TeamDto>> getAllTeams() {
@@ -74,7 +72,6 @@ public class TeamController {
 					addr.setCity(addrDto.getCity());
 					addr.setState(addrDto.getState());
 					addr.setZip(addrDto.getZip());
-					addressRepo.save(addr);
 					addr.setPerson(person);
 					listAddress.add(addr);
 				}
