@@ -36,7 +36,7 @@ public class Person {
 	 */
 	@OneToMany(mappedBy="person", cascade = CascadeType.ALL)
 	//@OneToMany(fetch = FetchType.EAGER, mappedBy="person", cascade = CascadeType.ALL)
-	private List<Address> addresses;
+	private List<Phone> phones;
 	
 	@ManyToMany(mappedBy = "teamPersons")
 	List<Team> teams;
@@ -76,11 +76,12 @@ public class Person {
 		this.lastName = lastName;
 	}
 
-	public List<Address> getAddresses() {
-		return addresses;
+	public List<Phone> getPhones() {
+		return phones;
 	}
 
-	public void setAddresses(List<Address> addresses) {
-		this.addresses = addresses;
+	public void setPhones(List<Phone> phones) {
+		this.phones = phones;
 	}
+
 }

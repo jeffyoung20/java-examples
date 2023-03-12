@@ -16,12 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jeffyoung20.dataserver.models.data.Address;
 import com.jeffyoung20.dataserver.models.data.Person;
-import com.jeffyoung20.dataserver.models.dto.AddressDto;
+import com.jeffyoung20.dataserver.models.data.Phone;
 import com.jeffyoung20.dataserver.models.dto.PersonDto;
-import com.jeffyoung20.dataserver.repos.AddressRepo;
 import com.jeffyoung20.dataserver.repos.PersonRepo;
+import com.jeffyoung20.dataserver.repos.PhoneRepo;
 
 @RestController
 public class PersonController {
@@ -30,7 +29,7 @@ public class PersonController {
 	PersonRepo personRepo;
 	
 	@Autowired
-	AddressRepo addressRepo;
+	PhoneRepo phoneRepo;
 	
     @Autowired
     private ModelMapper modelMapper;
@@ -59,8 +58,8 @@ public class PersonController {
 		for(PersonDto personDto: listPersonDto) {
 			Person person = modelMapper.map(personDto, Person.class);
 			listPerson.add(person);
-			for(Address addr: person.getAddresses()) {
-				addr.setPerson(person);
+			for(Phone phone: person.getPhones()) {
+				phone.setPerson(person);
 			}
 		}
 		List<Person> listAdded = personRepo.saveAll(listPerson);
