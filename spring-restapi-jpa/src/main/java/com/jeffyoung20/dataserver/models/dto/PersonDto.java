@@ -2,10 +2,6 @@ package com.jeffyoung20.dataserver.models.dto;
 
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-
-
 
 public class PersonDto {
 	public long id;
