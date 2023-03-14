@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +27,14 @@ import com.jeffyoung20.dataserver.models.dto.PhoneDto;
 import com.jeffyoung20.dataserver.models.dto.TeamDto;
 import com.jeffyoung20.dataserver.repos.PersonRepo;
 import com.jeffyoung20.dataserver.repos.TeamRepo;
+import com.jeffyoung20.dataserver.services.SvcPerson;
+import com.jeffyoung20.dataserver.services.SvcTeam;
 import com.jeffyoung20.dataserver.services.SvcTeamPerson;
 
 @RestController
 public class TeamController {
+	private final static Logger logger = LoggerFactory.getLogger(TeamController.class);
+	
     @Autowired
     private ModelMapper modelMapper;
     
@@ -36,7 +42,13 @@ public class TeamController {
     private TeamRepo teamRepo;
     
     @Autowired
+    private SvcTeam svcTeam;
+    
+    @Autowired
     private PersonRepo personRepo;
+    
+    @Autowired
+    private SvcPerson svcPerson;
     
     @Autowired 
     SvcTeamPerson teamPersonServices;
@@ -63,30 +75,8 @@ public class TeamController {
 	public ResponseEntity<List<TeamDto>> addTeams(@RequestBody List<TeamDto> listTeamDto) {
 		List<Team> listTeamUpdated = new ArrayList<Team>();
 		for(TeamDto teamDto: listTeamDto) {
-			Team team =  modelMapper.map(teamDto, Team.class);
-			List<Person> listPerson = new ArrayList<Person>();
-			for(PersonDto personDto: teamDto.getTeamPersons()) {
-				Person person = new Person();
-				person.setFirstName(personDto.getFirstName());
-				person.setLastName(personDto.getLastName());
-				List<Phone> listPhone = new ArrayList<Phone>();
-				for(PhoneDto phoneDto: personDto.getPhones()) {
-					Phone phone = new Phone();
-					phone.setType(phoneDto.getType());
-					phone.setNumber(phoneDto.getNumber());
-					phone.setPerson(person);
-					listPhone.add(phone);
-				}
-				person.setPhones(listPhone);
-				personRepo.save(person);
-				List<Team> listTeams = new ArrayList<Team>();
-				listTeams.add(team);
-				person.setTeams(listTeams);
-				listPerson.add(person);
-			}
-			team.setTeamPersons(listPerson);
-			teamRepo.save(team);
-			listTeamUpdated.add(team);
+			Team updTeam = svcTeam.upsert(teamDto);
+			listTeamUpdated.add(updTeam);
 		}
 		
 		//Return updated team by querying database to verify results
@@ -101,6 +91,7 @@ public class TeamController {
         	.collect(Collectors.toList());
 		return new ResponseEntity<>(returnTeamsDto, HttpStatus.CREATED);
 	}
+
 	
 	
 	@PostMapping("/team/{id}/person")
