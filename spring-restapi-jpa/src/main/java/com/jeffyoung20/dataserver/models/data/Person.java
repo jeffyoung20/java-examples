@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,7 +13,6 @@ import jakarta.persistence.OneToMany;
 
 //@Data
 @Entity
-//@RequiredArgsConstructor
 //@Table(name = "person")
 public class Person {
 	@Id
@@ -22,13 +22,6 @@ public class Person {
 	private String firstName;
 	private String lastName;
 	
-	/*
-	public Person(String firstName, String lastName) {
-		super();
-		this.firstName = firstName;
-		this.lastName = lastName;
-	}
-	*/
 	
 	/*
 	 * NOTE:  mappedBy property tells Hibernate which variable we are using to 
@@ -36,8 +29,9 @@ public class Person {
 	 */
 	@OneToMany(mappedBy="person", cascade = CascadeType.ALL)
 	//@OneToMany(fetch = FetchType.EAGER, mappedBy="person", cascade = CascadeType.ALL)
-	private List<Address> addresses;
+	private List<Phone> phones;
 	
+	//@ManyToMany(mappedBy = "teamPersons", fetch=FetchType.LAZY, cascade=CascadeType.REMOVE)
 	@ManyToMany(mappedBy = "teamPersons")
 	List<Team> teams;
 
@@ -76,11 +70,12 @@ public class Person {
 		this.lastName = lastName;
 	}
 
-	public List<Address> getAddresses() {
-		return addresses;
+	public List<Phone> getPhones() {
+		return phones;
 	}
 
-	public void setAddresses(List<Address> addresses) {
-		this.addresses = addresses;
+	public void setPhones(List<Phone> phones) {
+		this.phones = phones;
 	}
+
 }

@@ -7,7 +7,7 @@ public class PersonDto {
 	public long id;
 	public String firstName;
 	public String lastName;
-    public List<AddressDto> addresses;
+    public List<PhoneDto> phones;
     
 	public long getId() {
 		return id;
@@ -27,10 +27,10 @@ public class PersonDto {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public List<AddressDto> getAddresses() {
-		return addresses;
+	public List<PhoneDto> getPhones() {
+		return phones;
 	}
-	public void setAddresses(List<AddressDto> addresses) {
-		this.addresses = addresses;
+	public void setPhones(List<PhoneDto> phones) {
+		this.phones = phones;
 	}
 }

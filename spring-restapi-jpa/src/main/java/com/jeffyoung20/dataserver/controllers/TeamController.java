@@ -2,6 +2,7 @@ package com.jeffyoung20.dataserver.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -15,15 +16,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jeffyoung20.dataserver.models.data.Address;
+import com.jeffyoung20.dataserver.exceptions.EntityNotFoundException;
 import com.jeffyoung20.dataserver.models.data.Person;
+import com.jeffyoung20.dataserver.models.data.Phone;
 import com.jeffyoung20.dataserver.models.data.Team;
-import com.jeffyoung20.dataserver.models.dto.AddressDto;
 import com.jeffyoung20.dataserver.models.dto.PersonDto;
+import com.jeffyoung20.dataserver.models.dto.PhoneDto;
 import com.jeffyoung20.dataserver.models.dto.TeamDto;
-import com.jeffyoung20.dataserver.repos.AddressRepo;
 import com.jeffyoung20.dataserver.repos.PersonRepo;
 import com.jeffyoung20.dataserver.repos.TeamRepo;
+import com.jeffyoung20.dataserver.services.SvcTeamPerson;
 
 @RestController
 public class TeamController {
@@ -35,6 +37,9 @@ public class TeamController {
     
     @Autowired
     private PersonRepo personRepo;
+    
+    @Autowired 
+    SvcTeamPerson teamPersonServices;
     
 
     @GetMapping("/team")
@@ -49,7 +54,7 @@ public class TeamController {
 	@GetMapping("/team/{id}")
 	public ResponseEntity<TeamDto> getTeamById(@PathVariable("id") long id) {
 		Team team = teamRepo.findById(id)
-				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+				.orElseThrow(EntityNotFoundException::new); 
 		TeamDto teamDto = modelMapper.map(team, TeamDto.class);
 		return  new ResponseEntity<>(teamDto, HttpStatus.OK);
 	}
@@ -64,18 +69,15 @@ public class TeamController {
 				Person person = new Person();
 				person.setFirstName(personDto.getFirstName());
 				person.setLastName(personDto.getLastName());
-				List<Address> listAddress = new ArrayList<Address>();
-				for(AddressDto addrDto: personDto.getAddresses()) {
-					Address addr = new Address();
-					addr.setLine1(addrDto.getLine1());
-					addr.setLine2(addrDto.getLine2());
-					addr.setCity(addrDto.getCity());
-					addr.setState(addrDto.getState());
-					addr.setZip(addrDto.getZip());
-					addr.setPerson(person);
-					listAddress.add(addr);
+				List<Phone> listPhone = new ArrayList<Phone>();
+				for(PhoneDto phoneDto: personDto.getPhones()) {
+					Phone phone = new Phone();
+					phone.setType(phoneDto.getType());
+					phone.setNumber(phoneDto.getNumber());
+					phone.setPerson(person);
+					listPhone.add(phone);
 				}
-				person.setAddresses(listAddress);
+				person.setPhones(listPhone);
 				personRepo.save(person);
 				List<Team> listTeams = new ArrayList<Team>();
 				listTeams.add(team);
@@ -87,11 +89,11 @@ public class TeamController {
 			listTeamUpdated.add(team);
 		}
 		
-		//Return updated team by querying datbase to verify results
+		//Return updated team by querying database to verify results
 		List<Team> returnTeams = new ArrayList<Team>();
 		for(Team teamUpdated : listTeamUpdated) {
 			Team returnTeam = teamRepo.findById(teamUpdated.getId())
-					.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+					.orElseThrow(EntityNotFoundException::new); 
 			returnTeams.add(returnTeam);	
 		}
 		List<TeamDto> returnTeamsDto = returnTeams.stream()
@@ -104,7 +106,7 @@ public class TeamController {
 	@PostMapping("/team/{id}/person")
 	public ResponseEntity<TeamDto> addTeamPerson(@PathVariable("id") long teamId, @RequestBody List<PersonDto> listPersonDto) {
 		Team team = teamRepo.findById(teamId)
-				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+				.orElseThrow(EntityNotFoundException::new); 
 		List<Person> listPerson = new ArrayList<Person>();
 		for(PersonDto personDto: listPersonDto) {
 			Person person = modelMapper.map(personDto, Person.class);
@@ -117,8 +119,8 @@ public class TeamController {
 			teamPersons.add(person);
 			
 			listPerson.add(person);
-			for(Address addr: person.getAddresses()) {
-				addr.setPerson(person);
+			for(Phone phone: person.getPhones()) {
+				phone.setPerson(person);
 			}
 			personRepo.save(person);
 			teamRepo.save(team);
@@ -126,7 +128,7 @@ public class TeamController {
 		
 		//Return Team DTO
 		team = teamRepo.findById(teamId)
-				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+				.orElseThrow(EntityNotFoundException::new); 
 		TeamDto teamDto = modelMapper.map(team, TeamDto.class);
 		return new ResponseEntity<>(teamDto, HttpStatus.CREATED);
 
@@ -134,6 +136,7 @@ public class TeamController {
 
 	@DeleteMapping("/team/{id}")
 	public ResponseEntity<HttpStatus> deleteTeam(@PathVariable("id") long id) {
+		teamPersonServices.removeAllPersonsFromTeam(id);
 		teamRepo.deleteById(id);
 	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
