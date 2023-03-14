@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +27,17 @@ import com.jeffyoung20.dataserver.models.dto.PhoneDto;
 import com.jeffyoung20.dataserver.models.dto.TeamDto;
 import com.jeffyoung20.dataserver.repos.PersonRepo;
 import com.jeffyoung20.dataserver.repos.TeamRepo;
+<<<<<<< HEAD
+=======
+import com.jeffyoung20.dataserver.services.SvcPerson;
+import com.jeffyoung20.dataserver.services.SvcTeam;
+>>>>>>> refs/heads/spring-restapi-jpa
 import com.jeffyoung20.dataserver.services.SvcTeamPerson;
 
 @RestController
 public class TeamController {
+	private final static Logger logger = LoggerFactory.getLogger(TeamController.class);
+	
     @Autowired
     private ModelMapper modelMapper;
     
@@ -36,8 +45,17 @@ public class TeamController {
     private TeamRepo teamRepo;
     
     @Autowired
+    private SvcTeam svcTeam;
+    
+    @Autowired
     private PersonRepo personRepo;
     
+<<<<<<< HEAD
+=======
+    @Autowired
+    private SvcPerson svcPerson;
+    
+>>>>>>> refs/heads/spring-restapi-jpa
     @Autowired 
     SvcTeamPerson teamPersonServices;
     
@@ -63,6 +81,7 @@ public class TeamController {
 	public ResponseEntity<List<TeamDto>> addTeams(@RequestBody List<TeamDto> listTeamDto) {
 		List<Team> listTeamUpdated = new ArrayList<Team>();
 		for(TeamDto teamDto: listTeamDto) {
+<<<<<<< HEAD
 			Team team =  modelMapper.map(teamDto, Team.class);
 			List<Person> listPerson = new ArrayList<Person>();
 			for(PersonDto personDto: teamDto.getTeamPersons()) {
@@ -87,6 +106,10 @@ public class TeamController {
 			team.setTeamPersons(listPerson);
 			teamRepo.save(team);
 			listTeamUpdated.add(team);
+=======
+			Team updTeam = svcTeam.upsert(teamDto);
+			listTeamUpdated.add(updTeam);
+>>>>>>> refs/heads/spring-restapi-jpa
 		}
 		
 		//Return updated team by querying database to verify results
@@ -101,6 +124,7 @@ public class TeamController {
         	.collect(Collectors.toList());
 		return new ResponseEntity<>(returnTeamsDto, HttpStatus.CREATED);
 	}
+
 	
 	
 	@PostMapping("/team/{id}/person")
