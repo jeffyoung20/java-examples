@@ -53,7 +53,7 @@ public class SvcTeamPerson {
 		//***** DELETE from Teams side of link table *****
 		List<Person> teamPersons = teamToRemoveFrom.getTeamPersons();
 		for(Person per: teamPersons) {
-			if(per.getId() == personId) {
+			if(per.getId() == personToRemove.getId()) {
 				teamPersons.remove(per);
 				teamRepo.save(teamToRemoveFrom);
 				break;
@@ -63,7 +63,7 @@ public class SvcTeamPerson {
 		//***** DELETE from Person side of link table *****
 		List<Team> personTeams = personToRemove.getTeams();
 		for(Team team: personTeams) {
-			if(team.getId() == teamId) {
+			if(team.getId() == teamToRemoveFrom.getId()) {
 				personTeams.remove(team);
 				personRepo.save(personToRemove);
 			}
@@ -90,5 +90,32 @@ public class SvcTeamPerson {
 		//***** DELETE from Teams side of link table *****
 		teamToRemove.setTeamPersons(new ArrayList<Person>());
 		teamRepo.save(teamToRemove);
+	}
+
+	
+	public void addPersonToTeam(long personId, long teamId) {
+		Person person = personRepo.findById(personId)
+				.orElseThrow(EntityNotFoundException::new); 
+		Team team = teamRepo.findById(teamId)
+				.orElseThrow(EntityNotFoundException::new); 
+				List<Person> teamPersons = team.getTeamPersons();
+				
+		if(teamPersons == null) {
+			List<Person> listPersons = new ArrayList<Person>();
+			team.setTeamPersons(listPersons);
+		}
+		if(!teamPersons.contains(person)) {
+			teamPersons.add(person);
+			teamRepo.save(team);
+		}
+
+		List<Team> personTeams = person.getTeams();
+		if (personTeams == null) {
+			personTeams = new ArrayList<Team>();
+		}
+		if(!personTeams.contains(team)) {
+			personTeams.add(team);
+			personRepo.save(person);		
+		}
 	}
 }

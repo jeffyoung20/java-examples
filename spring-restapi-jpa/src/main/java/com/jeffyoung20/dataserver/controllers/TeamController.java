@@ -52,6 +52,7 @@ public class TeamController {
     
     @Autowired 
     SvcTeamPerson teamPersonServices;
+
     
 
     @GetMapping("/team")
@@ -98,23 +99,11 @@ public class TeamController {
 	public ResponseEntity<TeamDto> addTeamPerson(@PathVariable("id") long teamId, @RequestBody List<PersonDto> listPersonDto) {
 		Team team = teamRepo.findById(teamId)
 				.orElseThrow(EntityNotFoundException::new); 
-		List<Person> listPerson = new ArrayList<Person>();
+		//List<Person> listPerson = new ArrayList<Person>();
 		for(PersonDto personDto: listPersonDto) {
-			Person person = modelMapper.map(personDto, Person.class);
-			
-			List<Person> teamPersons = team.getTeamPersons();
-			if(teamPersons == null) {
-				List<Person> listPersons = new ArrayList<Person>();
-				team.setTeamPersons(listPersons);
-			}
-			teamPersons.add(person);
-			
-			listPerson.add(person);
-			for(Phone phone: person.getPhones()) {
-				phone.setPerson(person);
-			}
-			personRepo.save(person);
-			teamRepo.save(team);
+			//Person person = modelMapper.map(personDto, Person.class);
+			Person person = svcPerson.upsertPerson(personDto);
+			teamPersonServices.addPersonToTeam(person.getId(), team.getId());
 		}
 		
 		//Return Team DTO
