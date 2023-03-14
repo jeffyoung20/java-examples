@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jeffyoung20.dataserver.exceptions.EntityNotFoundException;
+import com.jeffyoung20.dataserver.exceptions.FatalErrorException;
 import com.jeffyoung20.dataserver.models.data.Person;
 import com.jeffyoung20.dataserver.models.data.Phone;
 import com.jeffyoung20.dataserver.models.data.Team;
@@ -51,8 +53,17 @@ public class PersonController {
     
 	
 	@GetMapping("/person")
-	public ResponseEntity<List<PersonDto>> getAllPerson() {
-		List<Person> listPersons = personRepo.findAll();
+	public ResponseEntity<List<PersonDto>> getPerson(@RequestParam Optional<String> firstName, @RequestParam Optional<String> lastName) {
+		List<Person> listPersons = new ArrayList<Person>();
+		if(firstName.isEmpty() && lastName.isEmpty())
+		{
+			listPersons = personRepo.findAll();
+		}
+		else {
+			String fname = firstName.get();
+			String lname = lastName.get();
+			listPersons = personRepo.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(fname, lname);
+		}
 		List<PersonDto> listPersonDtos = listPersons.stream()
 			.map(person -> modelMapper.map(person, PersonDto.class))
         	.collect(Collectors.toList());
@@ -62,7 +73,7 @@ public class PersonController {
 	@GetMapping("/person/{id}")
 	public ResponseEntity<PersonDto> getPersonById(@PathVariable("id") long id) {
 		Person person = personRepo.findById(id)
-				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+				.orElseThrow(EntityNotFoundException::new); 
 		PersonDto personDto = modelMapper.map(person, PersonDto.class);
 		return  new ResponseEntity<>(personDto, HttpStatus.OK);
 	}
