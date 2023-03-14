@@ -2,12 +2,9 @@ package com.jeffyoung20.dataserver.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jeffyoung20.dataserver.exceptions.EntityNotFoundException;
 import com.jeffyoung20.dataserver.models.data.Person;
-import com.jeffyoung20.dataserver.models.data.Phone;
 import com.jeffyoung20.dataserver.models.data.Team;
 import com.jeffyoung20.dataserver.models.dto.PersonDto;
-import com.jeffyoung20.dataserver.models.dto.PhoneDto;
 import com.jeffyoung20.dataserver.models.dto.TeamDto;
-import com.jeffyoung20.dataserver.repos.PersonRepo;
 import com.jeffyoung20.dataserver.repos.TeamRepo;
 import com.jeffyoung20.dataserver.services.SvcPerson;
 import com.jeffyoung20.dataserver.services.SvcTeam;

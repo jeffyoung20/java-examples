@@ -21,8 +21,6 @@ import com.jeffyoung20.dataserver.exceptions.EntityNotFoundException;
 import com.jeffyoung20.dataserver.models.data.Person;
 import com.jeffyoung20.dataserver.models.dto.PersonDto;
 import com.jeffyoung20.dataserver.repos.PersonRepo;
-import com.jeffyoung20.dataserver.repos.PhoneRepo;
-import com.jeffyoung20.dataserver.repos.TeamRepo;
 import com.jeffyoung20.dataserver.services.SvcPerson;
 import com.jeffyoung20.dataserver.services.SvcTeamPerson;
 
@@ -31,12 +29,6 @@ public class PersonController {
 
 	@Autowired
 	PersonRepo personRepo;
-	
-	@Autowired
-	PhoneRepo phoneRepo;
-	
-	@Autowired
-	TeamRepo teamRepo;
 	
 	@Autowired
 	SvcTeamPerson svcTeamPerson;
