@@ -98,8 +98,8 @@ public class SvcTeamPerson {
 				.orElseThrow(EntityNotFoundException::new); 
 		Team team = teamRepo.findById(teamId)
 				.orElseThrow(EntityNotFoundException::new); 
-				List<Person> teamPersons = team.getTeamPersons();
-				
+
+		List<Person> teamPersons = team.getTeamPersons();
 		if(teamPersons == null) {
 			List<Person> listPersons = new ArrayList<Person>();
 			team.setTeamPersons(listPersons);
@@ -117,5 +117,10 @@ public class SvcTeamPerson {
 			personTeams.add(team);
 			personRepo.save(person);		
 		}
+	}
+
+	public void MovePersonToTeam(long teamIdOld, long teamIdNew, long personId) {
+		removePersonFromTeamById(personId,teamIdOld);
+		addPersonToTeam(personId, teamIdNew);
 	}
 }

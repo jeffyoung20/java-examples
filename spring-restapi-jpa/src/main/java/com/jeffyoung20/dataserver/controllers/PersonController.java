@@ -18,12 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jeffyoung20.dataserver.exceptions.EntityNotFoundException;
-import com.jeffyoung20.dataserver.exceptions.FatalErrorException;
 import com.jeffyoung20.dataserver.models.data.Person;
-import com.jeffyoung20.dataserver.models.data.Phone;
-import com.jeffyoung20.dataserver.models.data.Team;
 import com.jeffyoung20.dataserver.models.dto.PersonDto;
-import com.jeffyoung20.dataserver.models.dto.PhoneDto;
 import com.jeffyoung20.dataserver.repos.PersonRepo;
 import com.jeffyoung20.dataserver.repos.PhoneRepo;
 import com.jeffyoung20.dataserver.repos.TeamRepo;

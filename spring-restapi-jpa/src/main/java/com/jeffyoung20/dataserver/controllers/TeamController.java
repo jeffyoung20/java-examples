@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +34,7 @@ import com.jeffyoung20.dataserver.services.SvcTeamPerson;
 
 @RestController
 public class TeamController {
-	private final static Logger logger = LoggerFactory.getLogger(TeamController.class);
+	//private final static Logger logger = LoggerFactory.getLogger(TeamController.class);
 	
     @Autowired
     private ModelMapper modelMapper;
@@ -45,13 +46,10 @@ public class TeamController {
     private SvcTeam svcTeam;
     
     @Autowired
-    private PersonRepo personRepo;
-    
-    @Autowired
     private SvcPerson svcPerson;
     
     @Autowired 
-    SvcTeamPerson teamPersonServices;
+    private SvcTeamPerson svcTeamPerson;
 
     
 
@@ -103,7 +101,7 @@ public class TeamController {
 		for(PersonDto personDto: listPersonDto) {
 			//Person person = modelMapper.map(personDto, Person.class);
 			Person person = svcPerson.upsertPerson(personDto);
-			teamPersonServices.addPersonToTeam(person.getId(), team.getId());
+			svcTeamPerson.addPersonToTeam(person.getId(), team.getId());
 		}
 		
 		//Return Team DTO
@@ -114,9 +112,27 @@ public class TeamController {
 
 	}
 
+	@PutMapping("/team/{teamId}/person/{personId}/new-team/{teamIdNew}")
+	public ResponseEntity<List<TeamDto>> movePersonToNewTeam(@PathVariable("teamId") long teamId, 
+												@PathVariable("personId") long personId, 
+												@PathVariable("teamIdNew") long teamIdNew) {
+		svcTeamPerson.MovePersonToTeam(teamId, teamIdNew, personId);
+		
+		//Return Team DTO
+		Team teamNew = teamRepo.findById(teamIdNew)
+				.orElseThrow(EntityNotFoundException::new); 
+		Team teamOld = teamRepo.findById(teamId)
+				.orElseThrow(EntityNotFoundException::new); 
+		List<TeamDto> listDtos = new ArrayList<TeamDto>();
+		listDtos.add(modelMapper.map(teamNew, TeamDto.class));
+		listDtos.add(modelMapper.map(teamOld, TeamDto.class));
+
+		return new ResponseEntity<>(listDtos, HttpStatus.ACCEPTED);
+	}
+
 	@DeleteMapping("/team/{id}")
 	public ResponseEntity<HttpStatus> deleteTeam(@PathVariable("id") long id) {
-		teamPersonServices.removeAllPersonsFromTeam(id);
+		svcTeamPerson.removeAllPersonsFromTeam(id);
 		teamRepo.deleteById(id);
 	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
