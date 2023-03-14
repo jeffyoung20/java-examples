@@ -16,11 +16,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jeffyoung20.dataserver.exceptions.EntityNotFoundException;
 import com.jeffyoung20.dataserver.models.data.Person;
 import com.jeffyoung20.dataserver.models.data.Phone;
+import com.jeffyoung20.dataserver.models.data.Team;
 import com.jeffyoung20.dataserver.models.dto.PersonDto;
+import com.jeffyoung20.dataserver.models.dto.PhoneDto;
 import com.jeffyoung20.dataserver.repos.PersonRepo;
 import com.jeffyoung20.dataserver.repos.PhoneRepo;
+import com.jeffyoung20.dataserver.repos.TeamRepo;
+import com.jeffyoung20.dataserver.services.SvcPerson;
+import com.jeffyoung20.dataserver.services.SvcTeamPerson;
 
 @RestController
 public class PersonController {
@@ -31,7 +37,16 @@ public class PersonController {
 	@Autowired
 	PhoneRepo phoneRepo;
 	
-    @Autowired
+	@Autowired
+	TeamRepo teamRepo;
+	
+	@Autowired
+	SvcTeamPerson svcTeamPerson;
+	
+	@Autowired 
+	SvcPerson svcPerson;
+
+	@Autowired
     private ModelMapper modelMapper;
     
 	
@@ -54,25 +69,24 @@ public class PersonController {
 
 	@PostMapping("/person")
 	public ResponseEntity<List<PersonDto>> addPersons(@RequestBody List<PersonDto> listPersonDto) {
-		List<Person> listPerson = new ArrayList<Person>();
+		List<Person> listSavedPersons = new ArrayList<Person>();
 		for(PersonDto personDto: listPersonDto) {
-			Person person = modelMapper.map(personDto, Person.class);
-			listPerson.add(person);
-			for(Phone phone: person.getPhones()) {
-				phone.setPerson(person);
-			}
+			Person personToSave = svcPerson.upsertPerson(personDto);
+			listSavedPersons.add(personToSave);
 		}
-		List<Person> listAdded = personRepo.saveAll(listPerson);
-		List<PersonDto> listPersonDtos = listAdded.stream()
+
+		List<PersonDto> listPersonDtos = listSavedPersons.stream()
 											.map(person -> modelMapper.map(person, PersonDto.class))
 											.collect(Collectors.toList());
 		return new ResponseEntity<>(listPersonDtos, HttpStatus.CREATED);
 	}
+
 	
 	@DeleteMapping("/person/{id}")
 	public ResponseEntity<HttpStatus> deletePerson(@PathVariable("id") long id) {
+		svcTeamPerson.removePersonFromAllTeams(id);	
 		personRepo.deleteById(id);
 	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
-	
+
 }

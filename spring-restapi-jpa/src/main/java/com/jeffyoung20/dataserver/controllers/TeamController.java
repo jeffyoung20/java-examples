@@ -2,6 +2,7 @@ package com.jeffyoung20.dataserver.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jeffyoung20.dataserver.exceptions.EntityNotFoundException;
 import com.jeffyoung20.dataserver.models.data.Person;
 import com.jeffyoung20.dataserver.models.data.Phone;
 import com.jeffyoung20.dataserver.models.data.Team;
@@ -23,6 +25,7 @@ import com.jeffyoung20.dataserver.models.dto.PhoneDto;
 import com.jeffyoung20.dataserver.models.dto.TeamDto;
 import com.jeffyoung20.dataserver.repos.PersonRepo;
 import com.jeffyoung20.dataserver.repos.TeamRepo;
+import com.jeffyoung20.dataserver.services.SvcTeamPerson;
 
 @RestController
 public class TeamController {
@@ -34,6 +37,9 @@ public class TeamController {
     
     @Autowired
     private PersonRepo personRepo;
+    
+    @Autowired 
+    SvcTeamPerson teamPersonServices;
     
 
     @GetMapping("/team")
@@ -48,7 +54,7 @@ public class TeamController {
 	@GetMapping("/team/{id}")
 	public ResponseEntity<TeamDto> getTeamById(@PathVariable("id") long id) {
 		Team team = teamRepo.findById(id)
-				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+				.orElseThrow(EntityNotFoundException::new); 
 		TeamDto teamDto = modelMapper.map(team, TeamDto.class);
 		return  new ResponseEntity<>(teamDto, HttpStatus.OK);
 	}
@@ -87,7 +93,7 @@ public class TeamController {
 		List<Team> returnTeams = new ArrayList<Team>();
 		for(Team teamUpdated : listTeamUpdated) {
 			Team returnTeam = teamRepo.findById(teamUpdated.getId())
-					.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+					.orElseThrow(EntityNotFoundException::new); 
 			returnTeams.add(returnTeam);	
 		}
 		List<TeamDto> returnTeamsDto = returnTeams.stream()
@@ -100,7 +106,7 @@ public class TeamController {
 	@PostMapping("/team/{id}/person")
 	public ResponseEntity<TeamDto> addTeamPerson(@PathVariable("id") long teamId, @RequestBody List<PersonDto> listPersonDto) {
 		Team team = teamRepo.findById(teamId)
-				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+				.orElseThrow(EntityNotFoundException::new); 
 		List<Person> listPerson = new ArrayList<Person>();
 		for(PersonDto personDto: listPersonDto) {
 			Person person = modelMapper.map(personDto, Person.class);
@@ -122,7 +128,7 @@ public class TeamController {
 		
 		//Return Team DTO
 		team = teamRepo.findById(teamId)
-				.orElseThrow(RuntimeException::new); //TODO: Change to custom exception type
+				.orElseThrow(EntityNotFoundException::new); 
 		TeamDto teamDto = modelMapper.map(team, TeamDto.class);
 		return new ResponseEntity<>(teamDto, HttpStatus.CREATED);
 
@@ -130,6 +136,7 @@ public class TeamController {
 
 	@DeleteMapping("/team/{id}")
 	public ResponseEntity<HttpStatus> deleteTeam(@PathVariable("id") long id) {
+		teamPersonServices.removeAllPersonsFromTeam(id);
 		teamRepo.deleteById(id);
 	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
