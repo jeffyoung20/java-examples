@@ -26,6 +26,9 @@ public class SvcMain {
 	
 	@Autowired
 	private RepoTeam repoTeam;
+	
+	@Autowired
+	private RepoPhone repoPhone;
 
 	@Autowired
     private ModelMapper modelMapper;
@@ -92,7 +95,8 @@ public class SvcMain {
 	}
 
 	private Person updatePerson(PersonDto dtoPersonUpdate, Person existingPerson) {
-		List<Phone> updatedPhonesList = existingPerson.getPhones();
+		//List<Phone> updatedPhonesList = existingPerson.getPhones();
+		List<Phone> updatedPhonesList = new ArrayList<Phone>();
 		for( PhoneDto phoneDto : dtoPersonUpdate.phones) {
 			Phone ph = new Phone();
 			ph.setType(phoneDto.getType());
@@ -100,13 +104,21 @@ public class SvcMain {
 			ph.setPerson(existingPerson);
 			updatedPhonesList.add(ph);
 		}
+		removeAllPhonesFromPerson( existingPerson );
 		existingPerson.setPhones(updatedPhonesList);
 		Person personSaved = repoPerson.save(existingPerson);
 		return personSaved;
 	}
 
-
-	public void removePersonFromAllTeams(long personId) {
+	public void removeAllPhonesFromPerson(Person person) {
+		List<Phone> listExistingPhones = person.getPhones();
+		for(Phone phone : listExistingPhones) {
+			phone.setPerson(null);
+			repoPhone.save(phone);
+		}
+	}
+	
+ 	public void removePersonFromAllTeams(long personId) {
 		Person personToDelete = repoPerson.findById(personId)
 				.orElseThrow(EntityNotFoundException::new); 
 	
