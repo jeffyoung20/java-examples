@@ -21,19 +21,8 @@ import com.jeffyoung20.dataserver.models.data.Person;
 import com.jeffyoung20.dataserver.models.data.Team;
 import com.jeffyoung20.dataserver.models.dto.PersonDto;
 import com.jeffyoung20.dataserver.models.dto.TeamDto;
-<<<<<<< HEAD
-import com.jeffyoung20.dataserver.repos.PersonRepo;
-import com.jeffyoung20.dataserver.repos.TeamRepo;
-<<<<<<< HEAD
-=======
-import com.jeffyoung20.dataserver.services.SvcPerson;
-import com.jeffyoung20.dataserver.services.SvcTeam;
->>>>>>> refs/heads/spring-restapi-jpa
-import com.jeffyoung20.dataserver.services.SvcTeamPerson;
-=======
 import com.jeffyoung20.dataserver.services.RepoTeam;
 import com.jeffyoung20.dataserver.services.SvcMain;
->>>>>>> refs/heads/spring-restapi-jpa
 
 @RestController
 public class TeamController {
@@ -43,24 +32,8 @@ public class TeamController {
     private ModelMapper modelMapper;
     
     @Autowired
-<<<<<<< HEAD
-    private TeamRepo teamRepo;
-    
-    @Autowired
-    private SvcTeam svcTeam;
-    
-    @Autowired
-    private PersonRepo personRepo;
-    
-<<<<<<< HEAD
-=======
-    @Autowired
-    private SvcPerson svcPerson;
-=======
     private RepoTeam repoTeam;
->>>>>>> refs/heads/spring-restapi-jpa
     
->>>>>>> refs/heads/spring-restapi-jpa
     @Autowired 
     private SvcMain svcMain;
 
@@ -87,39 +60,8 @@ public class TeamController {
 	public ResponseEntity<List<TeamDto>> addTeams(@RequestBody List<TeamDto> listTeamDto) {
 		List<Team> listTeamUpdated = new ArrayList<Team>();
 		for(TeamDto teamDto: listTeamDto) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-			Team team =  modelMapper.map(teamDto, Team.class);
-			List<Person> listPerson = new ArrayList<Person>();
-			for(PersonDto personDto: teamDto.getTeamPersons()) {
-				Person person = new Person();
-				person.setFirstName(personDto.getFirstName());
-				person.setLastName(personDto.getLastName());
-				List<Phone> listPhone = new ArrayList<Phone>();
-				for(PhoneDto phoneDto: personDto.getPhones()) {
-					Phone phone = new Phone();
-					phone.setType(phoneDto.getType());
-					phone.setNumber(phoneDto.getNumber());
-					phone.setPerson(person);
-					listPhone.add(phone);
-				}
-				person.setPhones(listPhone);
-				personRepo.save(person);
-				List<Team> listTeams = new ArrayList<Team>();
-				listTeams.add(team);
-				person.setTeams(listTeams);
-				listPerson.add(person);
-			}
-			team.setTeamPersons(listPerson);
-			teamRepo.save(team);
-			listTeamUpdated.add(team);
-=======
-			Team updTeam = svcTeam.upsert(teamDto);
-=======
 			Team updTeam = svcMain.saveTeam(teamDto);
->>>>>>> refs/heads/spring-restapi-jpa
 			listTeamUpdated.add(updTeam);
->>>>>>> refs/heads/spring-restapi-jpa
 		}
 		
 		//Return updated team by querying database to verify results
