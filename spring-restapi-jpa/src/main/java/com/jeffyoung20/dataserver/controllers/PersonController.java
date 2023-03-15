@@ -20,22 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jeffyoung20.dataserver.exceptions.EntityNotFoundException;
 import com.jeffyoung20.dataserver.models.data.Person;
 import com.jeffyoung20.dataserver.models.dto.PersonDto;
-import com.jeffyoung20.dataserver.repos.PersonRepo;
-import com.jeffyoung20.dataserver.services.SvcPerson;
-import com.jeffyoung20.dataserver.services.SvcTeamPerson;
+import com.jeffyoung20.dataserver.services.RepoPerson;
+import com.jeffyoung20.dataserver.services.SvcMain;
 
 @RestController
 public class PersonController {
 
 	@Autowired
-	PersonRepo personRepo;
+	RepoPerson repoPerson;
 	
 	@Autowired
-	SvcTeamPerson svcTeamPerson;
+	SvcMain svcMain;
 	
-	@Autowired 
-	SvcPerson svcPerson;
-
 	@Autowired
     private ModelMapper modelMapper;
     
@@ -45,12 +41,12 @@ public class PersonController {
 		List<Person> listPersons = new ArrayList<Person>();
 		if(firstName.isEmpty() && lastName.isEmpty())
 		{
-			listPersons = personRepo.findAll();
+			listPersons = repoPerson.findAll();
 		}
 		else {
 			String fname = firstName.get();
 			String lname = lastName.get();
-			listPersons = personRepo.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(fname, lname);
+			listPersons = repoPerson.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(fname, lname);
 		}
 		List<PersonDto> listPersonDtos = listPersons.stream()
 			.map(person -> modelMapper.map(person, PersonDto.class))
@@ -60,7 +56,7 @@ public class PersonController {
 	
 	@GetMapping("/person/{id}")
 	public ResponseEntity<PersonDto> getPersonById(@PathVariable("id") long id) {
-		Person person = personRepo.findById(id)
+		Person person = repoPerson.findById(id)
 				.orElseThrow(EntityNotFoundException::new); 
 		PersonDto personDto = modelMapper.map(person, PersonDto.class);
 		return  new ResponseEntity<>(personDto, HttpStatus.OK);
@@ -70,7 +66,7 @@ public class PersonController {
 	public ResponseEntity<List<PersonDto>> addPersons(@RequestBody List<PersonDto> listPersonDto) {
 		List<Person> listSavedPersons = new ArrayList<Person>();
 		for(PersonDto personDto: listPersonDto) {
-			Person personToSave = svcPerson.upsertPerson(personDto);
+			Person personToSave = svcMain.savePerson(personDto);
 			listSavedPersons.add(personToSave);
 		}
 
@@ -83,8 +79,8 @@ public class PersonController {
 	
 	@DeleteMapping("/person/{id}")
 	public ResponseEntity<HttpStatus> deletePerson(@PathVariable("id") long id) {
-		svcTeamPerson.removePersonFromAllTeams(id);	
-		personRepo.deleteById(id);
+		svcMain.removePersonFromAllTeams(id);	
+		repoPerson.deleteById(id);
 	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
