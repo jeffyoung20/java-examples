@@ -1,4 +1,4 @@
-package com.jeffyoung20.poormansjpa;
+package com.jeffyoung20.poormansjpa.repos;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;

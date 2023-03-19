@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.jeffyoung20.poormansjpa.repos.RepoPerson;
+
 public class CrudRepoTests {
 	private Logger LOGGER = LoggerFactory.getLogger(CrudRepoTests.class);
 	

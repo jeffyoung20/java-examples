@@ -14,11 +14,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jeffyoung20.poormansjpa.models.ModelPerson;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -39,6 +42,21 @@ public abstract class CrudRepository<T extends Object, T2> {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
+
+	public List<T> findAll() throws Exception {
+		T modelData = this.classModelData.newInstance();
+		StringBuilder sbSql = helperGenerateSqlSelect(modelData);
+		String sql = sbSql.toString();
+		
+		List<T> listModelData = null;
+		try {
+			LOGGER.info(sql);
+			listModelData = jdbcTemplate.query(sql, new CrudRepoMapper(this.classModelData));
+		} catch (DataAccessException e) {
+			LOGGER.warn("CrudRepository.findAll() returned no results");
+		}
+		return listModelData;
+	}
 
 	/**
 	 * @param id id
@@ -136,6 +154,32 @@ public abstract class CrudRepository<T extends Object, T2> {
 		jdbcTemplate.update(sqlInsert, arrayList.toArray());
 	}
 
+	
+	
+	/**
+	 * @param modelData model
+	 * @return 
+	 * @throws Exception exception
+	 */
+	public ResponseEntity<Object> delete(T modelData) throws Exception {
+		StringBuilder sbSql = new StringBuilder();
+		sbSql.append(String.format("DELETE FROM "));
+		if(getSchemaName(modelData) == null) {
+			sbSql.append(String.format("%s ", getTableName(modelData)));
+		}
+		else {
+			sbSql.append(String.format("%s.%s ", getSchemaName(modelData), getTableName(modelData)));
+		}
+		Field pkField = getPrimaryKeyColumn(modelData);
+		sbSql.append(String.format("WHERE %s = ?", getFieldName(pkField)));
+		String sql = sbSql.toString();
+		LOGGER.info(sql);
+			
+		ArrayList<Object> arrayList = new ArrayList<Object>();
+		arrayList.add(this.getPrimaryKeyValue(modelData));
+		jdbcTemplate.update(sql, arrayList.toArray());
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
 	/**
 	 * @param dcrValidation dcrValidation
 	 * @throws Exception 
@@ -163,8 +207,15 @@ public abstract class CrudRepository<T extends Object, T2> {
 	 */
 	public String genSqlSelectById(T2 id) throws Exception  {
 		T modelData = this.classModelData.newInstance();
+		StringBuilder sbSql = helperGenerateSqlSelect(modelData);
 
 		Field pkField = getPrimaryKeyColumn(modelData);
+		sbSql.append(String.format("where %s = ?", getFieldName(pkField)));
+		return sbSql.toString();
+	}
+
+
+	private StringBuilder helperGenerateSqlSelect(T modelData) throws Exception {
 		StringBuilder sbSql = new StringBuilder();
 		sbSql.append(String.format("select %s ", String.join(", ", getColumnNames(modelData))));
 		if(getSchemaName(modelData) == null) {
@@ -173,8 +224,7 @@ public abstract class CrudRepository<T extends Object, T2> {
 		else {
 			sbSql.append(String.format("from %s.%s ", getSchemaName(modelData), getTableName(modelData)));
 		}
-		sbSql.append(String.format("where %s = ?", getFieldName(pkField)));
-		return sbSql.toString();
+		return sbSql;
 	}
 	
 	/**
