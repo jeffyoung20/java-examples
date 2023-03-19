@@ -9,5 +9,5 @@ class PoorMansJpaApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
+	
 }
